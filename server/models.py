@@ -3,6 +3,7 @@ from datetime import date
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import validates
 from sqlalchemy import CheckConstraint
+from sqlalchemy.ext.associationproxy import association_proxy
 
 db = SQLAlchemy()
 
@@ -24,6 +25,7 @@ class Exercise(db.Model):
     workout_exercises = db.relationship(
         'WorkoutExercise', back_populates='exercise', cascade='all, delete-orphan'
     )
+    workouts = association_proxy('workout_exercises', 'workout')
 
     # Model validation: category must be one of a known set of values.
     VALID_CATEGORIES = ('cardio', 'strength', 'flexibility', 'balance')
@@ -63,6 +65,7 @@ class Workout(db.Model):
     workout_exercises = db.relationship(
         'WorkoutExercise', back_populates='workout', cascade='all, delete-orphan'
     )
+    exercises = association_proxy('workout_exercises', 'exercise')
 
     # Model validation: duration_minutes must be a positive integer.
     @validates('duration_minutes')
